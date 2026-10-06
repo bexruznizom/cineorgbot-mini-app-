@@ -2,96 +2,143 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>CINE ORG Mini App</title>
     <!-- Telegram Web App JS SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
-            --accent-color: #e50914;
-            --text-color: #ffffff;
-            --text-secondary: #aaaaaa;
+            --bg-color: #0d0d0d;
+            --card-bg: #181818;
+            --border-color: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #8e8e93;
+            --accent-white: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
+            color: var(--text-primary);
             padding: 16px;
-            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
+        /* Header va Logo */
         .header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
             text-align: center;
-            margin-bottom: 20px;
         }
 
-        .header h1 {
-            color: var(--accent-color);
-            font-size: 24px;
-            margin: 0 0 6px 0;
-            letter-spacing: 1px;
+        .logo-svg {
+            width: 140px;
+            height: auto;
+            margin-bottom: 10px;
         }
 
-        .header p {
-            color: var(--text-secondary);
+        .user-greeting {
             font-size: 13px;
-            margin: 0;
+            color: var(--text-secondary);
+            font-weight: 400;
+            letter-spacing: 0.3px;
         }
 
-        .search-box {
-            width: 100%;
+        /* Qidiruv Bori */
+        .search-container {
+            position: relative;
             margin-bottom: 20px;
         }
 
-        .search-box input {
+        .search-input {
             width: 100%;
-            padding: 12px 16px;
-            border-radius: 10px;
-            border: 1px solid #333;
+            padding: 14px 16px 14px 42px;
             background-color: var(--card-bg);
-            color: var(--text-color);
-            font-size: 14px;
-            box-sizing: border-box;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 15px;
             outline: none;
+            transition: border-color 0.2s ease;
         }
 
+        .search-input:focus {
+            border-color: #555555;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            fill: var(--text-secondary);
+        }
+
+        /* Kinolar Grid-i */
         .movies-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 14px;
+            padding-bottom: 20px;
         }
 
         .movie-card {
             background-color: var(--card-bg);
-            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            border: 1px solid #2a2a2a;
+            transition: transform 0.15s ease;
+        }
+
+        .movie-card:active {
+            transform: scale(0.98);
+        }
+
+        .poster-container {
+            position: relative;
+            width: 100%;
+            padding-top: 140%; /* 1:1.4 aspect ratio */
+            background-color: #222;
+            overflow: hidden;
         }
 
         .movie-poster {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            height: 180px;
+            height: 100%;
             object-fit: cover;
-            background-color: #2b2b2b;
         }
 
         .movie-info {
-            padding: 10px;
+            padding: 12px;
             display: flex;
             flex-direction: column;
             flex-grow: 1;
+            justify-content: space-between;
         }
 
         .movie-title {
             font-size: 14px;
-            font-weight: bold;
-            margin: 0 0 6px 0;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -99,90 +146,91 @@
 
         .movie-code {
             font-size: 12px;
-            color: var(--accent-color);
-            margin-bottom: 10px;
-            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
         }
 
         .btn-watch {
-            margin-top: auto;
             width: 100%;
-            padding: 8px 0;
+            padding: 10px 0;
+            background-color: var(--accent-white);
+            color: #000000;
             border: none;
-            border-radius: 6px;
-            background-color: var(--accent-color);
-            color: #fff;
-            font-weight: bold;
-            font-size: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
             cursor: pointer;
+            letter-spacing: 0.2px;
+        }
+
+        /* Topilmagan holat */
+        .empty-state {
+            text-align: center;
+            padding: 40px 0;
+            color: var(--text-secondary);
+            font-size: 14px;
+            display: none;
         }
     </style>
 </head>
 <body>
 
+    <!-- Header & Logo -->
     <div class="header">
-        <h1>CINE ORG</h1>
-        <p id="user-greeting">Premyeralar kataloqi</p>
+        <!-- SVG Logo (CINE ORG) -->
+        <svg class="logo-svg" viewBox="0 0 400 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 20 H390 V140 C250 170 150 170 10 140 Z" fill="#000000" stroke="#FFFFFF" stroke-width="12"/>
+            <!-- Film strip teshiklari -->
+            <rect x="30" y="32" width="22" height="18" rx="3" fill="#FFFFFF"/>
+            <rect x="75" y="32" width="22" height="18" rx="3" fill="#FFFFFF"/>
+            <rect x="120" y="32" width="22" height="18" rx="3" fill="#FFFFFF"/>
+            <rect x="165" y="32" width="22" height="18" rx="3" fill="#FFFFFF"/>
+            <rect x="210" y="32" width="22" height="18" rx="3" fill="#FFFFFF"/>
+            <rect x="255" y="32" width="22" height="18" rx="3" fill="#FFFFFF"/>
+            <rect x="300" y="32" width="22" height="18" rx="3" fill="#FFFFFF"/>
+            <rect x="345" y="32" width="22" height="18" rx="3" fill="#FFFFFF"/>
+            <!-- Text CINE ORG -->
+            <text x="200" y="115" font-family="'Impact', 'Arial Black', sans-serif" font-size="62" fill="#FFFFFF" text-anchor="middle" letter-spacing="2">CINE ORG</text>
+        </svg>
+        <p class="user-greeting" id="user-greeting">Xush kelibsiz!</p>
     </div>
 
-    <div class="search-box">
-        <input type="text" id="search" placeholder="Kino nomi yoki kodi..." onkeyup="filterMovies()">
+    <!-- Qidiruv -->
+    <div class="search-container">
+        <svg class="search-icon" viewBox="0 0 24 24">
+            <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+        </svg>
+        <input type="text" id="search-input" class="search-input" placeholder="Kino nomi yoki kodi..." oninput="filterMovies()">
     </div>
 
+    <!-- Kinolar Grid -->
     <div class="movies-grid" id="movies-container">
-        <!-- Kinolar ro'yxati JS orqali yuklanadi -->
+        <!-- JS orqali kartochkalar joylanadi -->
+    </div>
+
+    <div class="empty-state" id="empty-state">
+        Hech qanday kino topilmadi
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.ready();
-        tg.expand(); // Oynani to'liq ekranga yozish
+        tg.expand();
 
-        // Foydalanuvchi ismini chiqarish
+        // Foydalanuvchi nomini chiqarish
         if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
             document.getElementById('user-greeting').innerText = `Xush kelibsiz, ${tg.initDataUnsafe.user.first_name}!`;
         }
 
-        // Namunaviy kinolar bazasi (kod va ma'lumotlar)
+        // Namunaviy kinolar ro'yxati
         const movies = [
-            { title: "Forsaj 10", code: "101", poster: "https://via.placeholder.com/150x200/1e1e1e/fff?text=Forsaj+10" },
-            { title: "Avatar 2", code: "102", poster: "https://via.placeholder.com/150x200/1e1e1e/fff?text=Avatar+2" },
-            { title: "O'rmon bolasi", code: "103", poster: "https://via.placeholder.com/150x200/1e1e1e/fff?text=Kino+103" },
-            { title: "Mantiqiy Qasos", code: "104", poster: "https://via.placeholder.com/150x200/1e1e1e/fff?text=Kino+104" }
+            { id: "101", title: "Forsaj 10", poster: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=400&q=80" },
+            { id: "102", title: "Avatar 2", poster: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=400&q=80" },
+            { id: "103", title: "Mantiqiy Qasos", poster: "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=400&q=80" },
+            { id: "104", title: "Qora Ritsar", poster: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=400&q=80" }
         ];
 
         function renderMovies(list) {
             const container = document.getElementById('movies-container');
-            container.innerHTML = '';
-            list.forEach(movie => {
-                const card = document.createElement('div');
-                card.className = 'movie-card';
-                card.innerHTML = `
-                    <img src="${movie.poster}" class="movie-poster" alt="${movie.title}">
-                    <div class="movie-info">
-                        <div class="movie-title">${movie.title}</div>
-                        <div class="movie-code">Kodi: ${movie.code}</div>
-                        <button class="btn-watch" onclick="sendCode('${movie.code}')">Kodni Botga yuborish</button>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        // Kodni botga qaytarib yuborish va ilovani yopish
-        function sendCode(code) {
-            tg.sendData(code);
-        }
-
-        function filterMovies() {
-            const query = document.getElementById('search').value.toLowerCase();
-            const filtered = movies.filter(m => 
-                m.title.toLowerCase().includes(query) || m.code.includes(query)
-            );
-            renderMovies(filtered);
-        }
-
-        renderMovies(movies);
-    </script>
-</body>
-</html>
+            const emptyState = document.getElementById('empty-state');
+            container.
